@@ -1,0 +1,156 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 20:33+0000\n"
+"PO-Revision-Date: 2022-11-29 21:09+0000\n"
+"Last-Translator:   <admin@example.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Translated-Using: django-rosetta 0.9.8\n"
+
+#: core/admin.py:21
+msgid "Permissions"
+msgstr "Permessi"
+
+#: core/admin.py:32 core/admin.py:122
+msgid "Important dates"
+msgstr "Date importanti"
+
+#: core/admin.py:42
+msgid "Personal data"
+msgstr "Dati personali"
+
+#: core/admin.py:48
+msgid "Preferences"
+msgstr "Preferenze"
+
+#: core/admin.py:92
+msgid "User"
+msgstr "Utente"
+
+#: core/admin.py:100
+msgid "Location"
+msgstr "Posizione"
+
+#: core/admin.py:108
+msgid "Pet info"
+msgstr "Info animale"
+
+#: core/models/post.py:24
+msgid "post_type_lost"
+msgstr "Smarrito"
+
+#: core/models/post.py:25
+msgid "post_type_found"
+msgstr "Trovato"
+
+#: core/models/post.py:29
+msgid "post_status_draft"
+msgstr "Bozza"
+
+#: core/models/post.py:30
+msgid "post_status_published"
+msgstr "Pubblicato"
+
+#: core/models/post.py:31
+msgid "post_status_closed"
+msgstr "Chiuso"
+
+#: core/models/post.py:35
+msgid "pet_cat"
+msgstr "Gatto"
+
+#: core/models/post.py:36
+msgid "pet_dog"
+msgstr "Cane"
+
+#: core/models/post.py:37
+msgid "pet_bird"
+msgstr "Uccello"
+
+#: core/models/post.py:38
+msgid "pet_rabbit"
+msgstr "Coniglio"
+
+#: core/models/post.py:39
+msgid "pet_turtle"
+msgstr "Tartaruga"
+
+#: core/models/post.py:40
+msgid "pet_reptile"
+msgstr "Rettile"
+
+#: core/models/post.py:41
+msgid "pet_hamster"
+msgstr "Criceto"
+
+#: core/models/post.py:42
+msgid "pet_ferret"
+msgstr "Furetto"
+
+#: core/models/post.py:43
+msgid "pet_other"
+msgstr "Altro"
+
+#: core/models/post.py:47
+msgid "pet_gender_not_specified"
+msgstr "Non specificato"
+
+#: core/models/post.py:48
+msgid "pet_gender_male"
+msgstr "Maschio"
+
+#: core/models/post.py:49
+msgid "pet_gender_female"
+msgstr "Femmina"
+
+#: core/models/post.py:53
+msgid "pet_microchip_not_specified"
+msgstr "Non specificato"
+
+#: core/models/post.py:54
+msgid "pet_microchip_yes"
+msgstr "Sì"
+
+#: core/models/post.py:55
+msgid "pet_microchip_no"
+msgstr "No"
+
+#: core/models/post.py:59
+msgid "pet_sterilised_not_specified"
+msgstr "Non specificato"
+
+#: core/models/post.py:60
+msgid "pet_sterilised_yes"
+msgstr "Sì"
+
+#: core/models/post.py:61
+msgid "pet_sterilised_no"
+msgstr "No"
+
+#: core/models/user.py:42
+msgid "user_type_standard"
+msgstr "Standard"
+
+#: core/models/user.py:43
+msgid "user_type_premium"
+msgstr "Premium"
+
+#: core/models/user.py:44
+msgid "user_type_mod"
+msgstr "Moderatore"
+
+#: core/models/user.py:45
+msgid "user_type_admin"
+msgstr "Amministratore"
