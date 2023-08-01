@@ -34,7 +34,7 @@ class GetPostListView(generics.ListAPIView):
 
     def get_queryset(self):
         id = self.request.query_params.get('id')
-        post_type = self.request.query_params.get('post_type')
+        type = self.request.query_params.get('type')
         status = self.request.query_params.get('status')
         user_id = self.request.query_params.get('user_id')
         post_code = self.request.query_params.get('code')
@@ -56,8 +56,8 @@ class GetPostListView(generics.ListAPIView):
 
         if id:
             post_list = post_list.filter(id=id)
-        if post_type:
-            post_list = post_list.filter(type=post_type)
+        if type:
+            post_list = post_list.filter(type=type)
         if user_id:
             post_list = post_list.filter(user_id=user_id)
         if post_code:
@@ -86,6 +86,9 @@ class GetPostListView(generics.ListAPIView):
             post_list = post_list.filter(contacts=contacts)
         if event_date:
             post_list = post_list.filter(event_date=event_date)
+
+        if pet_type and type:
+            post_list = post_list.filter(pet_type=pet_type).filter(type=type)
 
         return post_list
 
