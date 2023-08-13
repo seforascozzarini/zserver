@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Distance
 
 from api.posts.serializers import (
     PostCreateSerializer,
@@ -36,8 +37,8 @@ class GetPostListView(generics.ListAPIView):
         id = self.request.query_params.get('id')
         type = self.request.query_params.get('type')
         status = self.request.query_params.get('status')
-        user_id = self.request.query_params.get('user_id')
-        post_code = self.request.query_params.get('code')
+        user = self.request.query_params.get('user')
+        code = self.request.query_params.get('code')
         pet_type = self.request.query_params.get('pet_type')
         gender = self.request.query_params.get('gender')
         microchip = self.request.query_params.get('microchip')
@@ -58,10 +59,10 @@ class GetPostListView(generics.ListAPIView):
             post_list = post_list.filter(id=id)
         if type:
             post_list = post_list.filter(type=type)
-        if user_id:
-            post_list = post_list.filter(user_id=user_id)
-        if post_code:
-            post_list = post_list.filter(code=post_code)
+        if user:
+            post_list = post_list.filter(user=user)
+        if code:
+            post_list = post_list.filter(code=code)
         if pet_type:
             post_list = post_list.filter(pet_type=pet_type)
         if gender:
@@ -72,6 +73,20 @@ class GetPostListView(generics.ListAPIView):
             post_list = post_list.filter(sterilised=sterilised)
         if location:
             post_list = post_list.filter(location=location)
+            # post_list = GeometryFilter(name='location', lookup_expr='location')
+
+            # radius = 2000
+            # location = Point(location.coordinates[0], location.coordinates[1], srid=4326)
+            # post_list = Post.objects.filter(
+            #     location__distance_lte=(
+            #         location,
+            #         D(m=radius)
+            #     )
+            # ).distance(
+            #     location
+            # ).order_by(
+            #     'distance'
+            # )
         if address:
             post_list = post_list.filter(address=address)
         if age:
