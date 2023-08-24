@@ -15,10 +15,12 @@ from django.contrib.gis.db.models.functions import Distance
 
 from api.posts.serializers import (
     PostCreateSerializer,
-    PostListSerializer
+    PostListSerializer,
+    PostImageListSerializer,
+    PostImageCreateSerializer
 )
 
-from core.models import Post
+from core.models import Post, PostImage
 
 from core.models.post import PostStatus
 
@@ -106,6 +108,36 @@ class GetPostListView(generics.ListAPIView):
             post_list = post_list.filter(pet_type=pet_type).filter(type=type)
 
         return post_list
+
+
+class CreatePostImageView(generics.CreateAPIView):
+    """Create a new postImage in the system."""
+    serializer_class = PostImageCreateSerializer
+
+
+class GetPostImageListView(generics.ListAPIView):
+    """"Get a post image list in the system."""
+
+    serializer_class = PostImageListSerializer
+
+    def get_queryset(self):
+        post = self.request.query_params.get('post')
+        is_default = self.request.query_params.get('is_default')
+        image = self.request.query_params.get('image')
+        description = self.request.query_params.get('description')
+
+        post_image_list = PostImage.objects.all()
+
+        if post:
+            post_image_list = post_image_list.filter(post=post)
+        if is_default:
+            post_image_list = post_image_list.filter(is_default=is_default)
+        if image:
+            post_image_list = post_image_list.filter(image=image)
+        if description:
+            post_image_list = post_image_list.filter(description=description)
+
+        return post_image_list
 
 
 # TODO AGGIUNGERE RICERCA DELLA DISTANZA DA UN PUNTO

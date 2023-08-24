@@ -4,7 +4,7 @@ Serializers for the post API View.
 from rest_framework import serializers
 from rest_framework_gis import serializers as gis_serializers
 
-from core.models import Post
+from core.models import Post, PostImage
 
 
 class PostCreateSerializer(gis_serializers.GeoModelSerializer):
@@ -12,7 +12,7 @@ class PostCreateSerializer(gis_serializers.GeoModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['code', 'type', 'location', 'address', 'pet_type',
+        fields = ['user', 'type', 'location', 'address', 'pet_type',
                   'gender', 'age', 'microchip', 'sterilised',
                   'specific_marks', 'pet_name', 'text', 'contacts', 'status',
                   'default_image', 'event_date']
@@ -46,3 +46,22 @@ class PostEditSerializer(gis_serializers.GeoModelSerializer):
                   'default_image', 'event_date']
         geo_field = ['location']
 
+
+class PostImageCreateSerializer(serializers.ModelSerializer):
+    """Serializer for the post image object creation."""
+
+    class Meta:
+        model = PostImage
+        fields = ['post', 'is_default', 'image', 'description']
+
+    def create(self, validated_data):
+        """Create and return a post."""
+        return Post.objects.create(**validated_data)
+
+
+class PostImageListSerializer(serializers.ModelSerializer):
+    """Serializer for the post image object creation."""
+
+    class Meta:
+        model = PostImage
+        fields = ['post', 'is_default', 'image', 'description']

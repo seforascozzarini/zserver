@@ -29,7 +29,7 @@ class UserManageSerializer(gis_serializers.GeoModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password', 'last_name', 'first_name', 'type',
+        fields = ['id', 'email', 'password', 'last_name', 'first_name', 'type',
                   'location', 'address', 'radius', 'firebase_id']
         geo_field = ['location']
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
