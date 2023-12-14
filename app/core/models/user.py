@@ -1,7 +1,7 @@
 """
 Database models.
 """
-from django.contrib.gis.db import models
+from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 )
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields import ArrayField
 
 
 class UserManager(BaseUserManager):
@@ -52,9 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     type = models.SmallIntegerField(choices=UserType.choices,
                                     default=UserType.STANDARD)
     address = models.CharField(max_length=500, blank=True)
-    location = models.PointField(
-        geography=True, srid=4326, blank=True, null=True
-    )
+    location = ArrayField(default=list, base_field=models.FloatField())
     radius = models.PositiveIntegerField(blank=True, null=True)
     firebase_id = models.CharField(max_length=255, blank=True)
     create_date = models.DateTimeField(default=timezone.now, editable=False)

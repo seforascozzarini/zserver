@@ -40,11 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis',
 
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_gis',
     'drf_spectacular',
     'rosetta',
     'corsheaders',
@@ -91,7 +89,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql',
         'HOST': os.environ.get('DB_HOST'),
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
@@ -99,8 +97,8 @@ DATABASES = {
     }
 }
 
-GDAL_LIBRARY_PATH = glob('/usr/lib/libgdal.so.*')[0]
-GEOS_LIBRARY_PATH = glob('/usr/lib/libgeos_c.so.*')[0]
+#GDAL_LIBRARY_PATH = glob('/usr/lib/libgdal.so.*')[0]
+#GEOS_LIBRARY_PATH = glob('/usr/lib/libgeos_c.so.*')[0]
 
 #GDAL_LIBRARY_PATH = '/opt/homebrew/Cellar/gdal/3.6.1/lib/libgdal.dylib'
 #GEOS_LIBRARY_PATH = '/opt/homebrew/Cellar/geos/3.11.1/lib/libgeos_c.dylib'

@@ -2,9 +2,10 @@ import random
 import string
 
 from django.conf import settings
-from django.contrib.gis.db import models
+from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields import ArrayField
 
 
 def generate_random_digit_string(length):
@@ -71,7 +72,7 @@ class Post(models.Model):
 
     code = models.CharField(max_length=10, editable=False, unique=True)
     type = models.SmallIntegerField(choices=PostType.choices)
-    location = models.PointField(geography=True, srid=4326)
+    location = ArrayField(default=list, base_field=models.FloatField())
     address = models.CharField(max_length=500)
     pet_type = models.SmallIntegerField(choices=PetType.choices)
     gender = models.SmallIntegerField(

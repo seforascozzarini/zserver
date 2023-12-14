@@ -8,10 +8,9 @@ from django.contrib.auth import (
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework_gis import serializers as gis_serializers
 
 
-class UserCreateSerializer(gis_serializers.GeoModelSerializer):
+class UserCreateSerializer(serializers.ModelSerializer):
     """Serializer for the user object creation."""
 
     class Meta:
@@ -24,14 +23,13 @@ class UserCreateSerializer(gis_serializers.GeoModelSerializer):
         return get_user_model().objects.create_user(**validated_data)
 
 
-class UserManageSerializer(gis_serializers.GeoModelSerializer):
+class UserManageSerializer(serializers.ModelSerializer):
     """Serializer for the user object view/modification."""
 
     class Meta:
         model = get_user_model()
         fields = ['id', 'email', 'password', 'last_name', 'first_name', 'type',
                   'location', 'address', 'radius', 'firebase_id']
-        geo_field = ['location']
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
         read_only_fields = ['email']
 

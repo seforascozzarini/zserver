@@ -2,12 +2,11 @@
 Serializers for the post API View.
 """
 from rest_framework import serializers
-from rest_framework_gis import serializers as gis_serializers
 
 from core.models import Post, PostImage
 
 
-class PostCreateSerializer(gis_serializers.GeoModelSerializer):
+class PostCreateSerializer(serializers.ModelSerializer):
     """Serializer for the post object creation."""
 
     class Meta:
@@ -16,14 +15,13 @@ class PostCreateSerializer(gis_serializers.GeoModelSerializer):
                   'gender', 'age', 'microchip', 'sterilised',
                   'specific_marks', 'pet_name', 'text', 'contacts', 'status',
                   'default_image', 'event_date']
-        geo_field = ['location']
 
     def create(self, validated_data):
         """Create and return a post."""
         return Post.objects.create(**validated_data)
 
 
-class PostListSerializer(gis_serializers.GeoModelSerializer):
+class PostListSerializer(serializers.ModelSerializer):
     """Serializer for the post object view/modification."""
 
     class Meta:
@@ -32,10 +30,9 @@ class PostListSerializer(gis_serializers.GeoModelSerializer):
                   'gender', 'age', 'microchip', 'sterilised',
                   'specific_marks', 'pet_name', 'text', 'contacts', 'status',
                   'is_flagged', 'default_image', 'event_date']
-        geo_field = ['location']
 
 
-class PostEditSerializer(gis_serializers.GeoModelSerializer):
+class PostEditSerializer(serializers.ModelSerializer):
     """Serializer for the post object view/modification."""
 
     class Meta:
@@ -44,7 +41,6 @@ class PostEditSerializer(gis_serializers.GeoModelSerializer):
                   'gender', 'age', 'microchip', 'sterilised',
                   'specific_marks', 'pet_name', 'text', 'contacts', 'status',
                   'default_image', 'event_date']
-        geo_field = ['location']
 
 
 class PostImageCreateSerializer(serializers.ModelSerializer):

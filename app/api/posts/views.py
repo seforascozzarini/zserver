@@ -9,9 +9,7 @@ from rest_framework import (
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
-from django.contrib.gis.db.models.functions import Distance
+
 
 from api.posts.serializers import (
     PostCreateSerializer,
@@ -141,19 +139,19 @@ class GetPostImageListView(generics.ListAPIView):
 
 
 # TODO AGGIUNGERE RICERCA DELLA DISTANZA DA UN PUNTO
-class GetPostLocation(generics.ListAPIView):
+#class GetPostLocation(generics.ListAPIView):
     """Get a post list filtered by location in the system."""
-    http_method_names = ['get']
-    serializer_class = PostListSerializer
+    #http_method_names = ['get']
+    #serializer_class = PostListSerializer
 
-    def get_queryset(self):
-        location = self.request.query_params.get('location')
-        longitude = self.request.query_params.get('longitude')
-        latitude = self.request.query_params.get('latitude')
-        radius = self.request.query_params.get('radius')
+    #def get_queryset(self):
+        #location = self.request.query_params.get('location')
+        #longitude = self.request.query_params.get('longitude')
+        #latitude = self.request.query_params.get('latitude')
+        #radius = self.request.query_params.get('radius')
 
-        location = Point(longitude, latitude)
+        #location = Point(longitude, latitude)
 
-        queryset = Post.objects.filter(location__distance_lte=(location, D(m=location.distance))).distance(location).order_by('distance')
+        #queryset = Post.objects.filter(location__distance_lte=(location, D(m=location.distance))).distance(location).order_by('distance')
 
-        return queryset
+        #return queryset
