@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.14"
 
 services:
   app:
@@ -6,8 +6,8 @@ services:
       context: .
       args:
         - DEV=true
-    ports:
-      - "8000:8000"
+    #ports:
+    #  - "8000:8000"
     volumes:
       - ./app:/app
     command: >
@@ -31,7 +31,18 @@ services:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
-
-
+  app-nginx-proxy:
+    build:
+      context: ./nginx
+      network: host
+    volumes:
+      - static_volume:/home/app/staticfiles
+      - media_volume:/home/app/mediafiles
+    ports:
+      - 8000:8000
+    depends_on:
+      - app
 volumes:
   dev-db-data:
+  static_volume:
+  media_volume:

@@ -22,9 +22,9 @@ RUN python -m venv /py && \
       --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
       --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
       binutils geos proj gdal && \
-#     ln -s /usr/lib/libproj.so.15 /usr/lib/libproj.so && \
-#     ln -s /usr/lib/libgdal.so.20 /usr/lib/libgdal.so && \
-#     ln -s /usr/lib/libgeos_c.so.1 /usr/lib/libgeos_c.so && \
+     ln -s /usr/lib/libproj.so.15 /usr/lib/libproj.so && \
+     ln -s /usr/lib/libgdal.so.20 /usr/lib/libgdal.so && \
+     ln -s /usr/lib/libgeos_c.so.1 /usr/lib/libgeos_c.so && \
     # Upgrade pip
     /py/bin/pip install --upgrade pip && \
     # Install project requirements
