@@ -1,7 +1,6 @@
 """
 Tests for models.
 """
-from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models.post import Post, PostType, PetType
@@ -66,7 +65,7 @@ class PostTests(TestCase):
         post = Post.objects.create(
             user=self.user,
             type=PostType.LOST,
-            location=Point(12.121212, 75.343434),
+            location=[12.121212, 75.343434],
             address='address',
             pet_type=PetType.CAT,
             text='text',

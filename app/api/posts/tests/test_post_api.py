@@ -1,7 +1,6 @@
 """
 Tests for the post API.
 """
-from django.contrib.gis.geos import Point
 from django.test import TestCase
 from django.urls import reverse
 
@@ -97,7 +96,7 @@ class PublicPostApiTest(TestCase):
             pet_type=1,
             address='Via Matteotti, 56,',
             text='ho perso il gatto',
-            location=Point(44.702112,10.563321, srid=4326),
+            location=[44.702112,10.563321],
             user_id=self.user.id
 
         )
