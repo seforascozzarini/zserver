@@ -27,7 +27,8 @@ RUN python -m venv /py && \
     rm -rf /tmp && \
     apk del .tmp-build-deps && \
     adduser --disabled-password --no-create-home django-user
-
+RUN pip install gunicorn
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "app.wsgi:application"]
