@@ -7,47 +7,33 @@ services:
     container_name: "zampo-server"
     build:
       context: .
-      dockerfile: docker/dev/Dockerfile
-      args:
-        - DEV=true
+      dockerfile: docker/prod/Dockerfile 
     ports:
      - "8000:8000"
     volumes:
-      - ./app:/app
-      - ./app/media_cdn/:/app/media_cdn/
+      - ./app/media_cdn/:/app/web/media_cdn/
       - ./app/static_cdn/:/app/static_cdn/
     command: /start.sh
-    env_file: ./.env/dev.env
-    depends_on:
-      - db
-  # DATABASE ##################################################################
-  db:
-    image: postgis/postgis:15-3.3
-    volumes:
-      - dev-db-data:/var/lib/postgresql/data
-    env_file: ./.env/db.env
+    env_file: ./.env/prod.env
 
   # REDIS #####################################################################
   redis:
     container_name: "zampo-redis"
     image: redis:7-alpine
     restart: always
-    depends_on:
-      - db
 
   # CELERY ####################################################################
   worker:
     image: zampo-server:latest
     container_name: "zampo-worker"
     env_file:
-      - ./.env/dev.env
-    command: celery -A app worker -l INFO 
+      - ./.env/prod.env
+    command: celery -A app worker -l INFO  -f ./logs/celery.log
     volumes:
-      - ./app:/app
+      - ./app/logs/:/app/logs/
     depends_on:
       - redis
       - app
-      - db
     restart: unless-stopped
 
   # CELERY BEAT ###############################################################
@@ -55,17 +41,13 @@ services:
     image: zampo-server:latest
     container_name: "zampo-scheduler"
     env_file:
-      - ./.env/dev.env
-    command: celery -A app beat -l INFO
+      - ./.env/prod.env
+    command: celery -A app beat -l INFO -f ./logs/beat.log --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
-      - ./app:/app
+      - ./app/logs/:/app/logs/
     depends_on:
       - redis
       - app
-      - db
     restart: always
 
-volumes:
-  dev-db-data:
-  static_volume:
-  media_volume:
+

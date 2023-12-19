@@ -19,16 +19,6 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k==xz0mx%*m97t@jlyqf#a^%5raq28^-cjyg2f2=^glbv)zfm3'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -48,6 +38,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'rosetta',
     'corsheaders',
+    'django_celery_beat',
 
     'core',
     'api.users',
@@ -99,15 +90,17 @@ DATABASES = {
     }
 }
 
-GDAL_LIBRARY_PATH = glob('/usr/lib/libgdal.so.*')[0]
-GEOS_LIBRARY_PATH = glob('/usr/lib/libgeos_c.so.*')[0]
+# GDAL_LIBRARY_PATH = glob('/usr/lib/libgdal.so.*')[0]
+# GEOS_LIBRARY_PATH = glob('/usr/lib/libgeos_c.so.*')[0]
 
 #GDAL_LIBRARY_PATH = '/opt/homebrew/Cellar/gdal/3.6.1/lib/libgdal.dylib'
 #GEOS_LIBRARY_PATH = '/opt/homebrew/Cellar/geos/3.11.1/lib/libgeos_c.dylib'
 #PROJ_LIBRARY_PATH = '/opt/homebrew/Cellar/proj/9.1.1/lib/libproj.dylib'
 
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
 
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -145,12 +138,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = '/static/'
+ 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -162,3 +150,11 @@ AUTH_USER_MODEL = 'core.User'
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+
+# Uploaded files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
+STATIC_URL = '/static/'

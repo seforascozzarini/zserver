@@ -6,3 +6,7 @@ djangorestframework-gis>=1.0,<1.1
 django-rosetta>=0.9.8,<0.10
 Pillow
 django-cors-headers
+celery
+gunicorn
+django-celery-beat
+redis
