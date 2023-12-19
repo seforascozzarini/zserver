@@ -14,8 +14,6 @@ services:
      - "8000:8000"
     volumes:
       - ./app:/app
-      - ./app/media_cdn/:/app/media_cdn/
-      - ./app/static_cdn/:/app/static_cdn/
     command: /start.sh
     env_file: ./.env/dev.env
     depends_on:

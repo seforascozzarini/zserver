@@ -14,6 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf import settings
+from django.conf.urls.static import static
+
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import (
@@ -30,7 +33,7 @@ urlpatterns = [
         name='api-docs',
     ),
     path('api/v1/', include('api.urls')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if 'rosetta' in settings.INSTALLED_APPS:
     urlpatterns += [

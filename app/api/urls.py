@@ -7,6 +7,7 @@ app_name = 'api'
 
 
 urlpatterns = [
+    path('auth/', include('api.auth.urls')),
     path('users/', include('api.users.urls')),
     path('posts/', include('api.posts.urls')),
     path('advices/', include('api.advices.urls')),

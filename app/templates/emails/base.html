@@ -1,0 +1,55 @@
+<!-- templates/email_base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Add your global styles here */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0; /* Set your background color */
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #408784; /* Set your header color */
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+        .footer {
+            background-color: #408784; /* Set your footer color */
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+        }
+        .content{
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <img src="{{static_url}}images/logo_white.png" width="150px" alt="Company Logo">
+        </div>
+        
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="footer">
+            &copy; 2023 Zampo
+        </div>
+    </div>
+</body>
+</html>

@@ -133,5 +133,4 @@ dmypy.json
 .idea/
 
 /app/media_cdn
-/app/static_cdn
 /app/logs

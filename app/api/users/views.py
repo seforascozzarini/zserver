@@ -22,16 +22,9 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
 
 
-class CreateTokenView(ObtainAuthToken):
-    """Create a new auth token for user."""
-    serializer_class = AuthTokenSerializer
-    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-
-
 class ProfileView(generics.RetrieveUpdateDestroyAPIView):
     """Profile of the authenticated user."""
     serializer_class = UserManageSerializer
-    authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):

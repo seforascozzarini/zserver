@@ -9,7 +9,13 @@ from django.contrib.auth.models import (
 )
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.hashers import make_password, check_password
 
+import math
+import random
+from celery import current_app
+from ..tasks import revoke_pswd_reset_otp
+from datetime import timedelta
 
 class UserManager(BaseUserManager):
     """Manager for users."""
@@ -57,9 +63,57 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     radius = models.PositiveIntegerField(blank=True, null=True)
     firebase_id = models.CharField(max_length=255, blank=True)
+
+    # one time password used for resetting password
+    otp_pswd_reset = models.CharField(
+        max_length=128, default=None, blank=True, null=True)
+
+
     create_date = models.DateTimeField(default=timezone.now, editable=False)
     write_date = models.DateTimeField(auto_now=True)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+    # Reset password otp handlers
+    def get_reset_otp(self, size=6, expire=5):
+        '''
+            Get a otp with the specified size that will be automatically deleted.
+            After creation the otp will be hashed and stored inside self.otp_pswd_reset.
+            args:
+                - size: the length of the otp
+                - expire: for how many minutes the otp will be valid 
+        '''
+        digits = '0123456789'
+        otp = "".join([digits[math.floor(random.random() * 10)]
+                      for x in range(size)])
+        hashed = make_password(otp)
+
+        # revoke deleting task if any
+        if self.otp_pswd_reset is not None:
+            task_id = f'{self.pk}-{self.otp_pswd_reset}'
+            current_app.control.revoke(task_id)
+
+        task_id = f'{self.pk}-{hashed}'
+        eta = timezone.now() + timedelta(minutes=expire)
+        revoke_pswd_reset_otp.apply_async(
+            args=[self.pk], eta=eta, task_id=task_id)
+
+        self.otp_pswd_reset = hashed
+        self.save()
+        return otp
+
+    def check_reset_otp(self, otp):
+        ''' Compare otp to otp_pswd_reset '''
+        if self.otp_pswd_reset is not None:
+            return check_password(otp, self.otp_pswd_reset)
+        return False
+
+    def revoke_reset_otp(self):
+        ''' Set to null otp_pswd_reset revoking the auto-delete task '''
+        if self.otp_pswd_reset is not None:
+            task_id = f'{self.pk}-{self.otp_pswd_reset}'
+            self.otp_pswd_reset = None
+            self.save()
+            current_app.control.revoke(task_id)

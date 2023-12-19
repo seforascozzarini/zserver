@@ -16,10 +16,10 @@ from glob import glob
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-
+env = os.environ.get
 
 # Application definition
 
@@ -31,9 +31,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'django.contrib.sites',
 
     'rest_framework',
-    'rest_framework.authtoken',
+    'knox',
     'rest_framework_gis',
     'drf_spectacular',
     'rosetta',
@@ -58,10 +59,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'app.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,12 +151,78 @@ AUTH_USER_MODEL = 'core.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
+from datetime import timedelta
+REST_KNOX = {
+    'TOKEN_TTL': timedelta(days=int(os.environ.get('TOKEN_TTL', 10))), 
+}
+
+SITE_ID=1 
 
 # Uploaded files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static_cdn'),
+]
 STATIC_URL = '/static/'
+
+EMAIL_ENABLED = env('EMAIL_ENABLED')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = bool(int(env('EMAIL_USE_TLS', True)))
+EMAIL_USE_SSL = bool(int(env('EMAIL_USE_SSL', False)))
+EMAIL_FROM_NAME = env("EMAIL_FROM_NAME")
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {name} {module} ({process:d}:{thread:d}) {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'maxBytes': 1024 * 1024,  # 1 MB
+        #     'backupCount': 3,
+        #     'formatter': 'verbose',
+        #     'filename': 'brainbow.log',
+        # },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': env('DJANGO_LOG_LEVEL'),
+            'propagate': True
+        },
+        'zampo': {
+            'handlers': ['console'],
+            'level': env('APP_LOG_LEVEL'),
+            # 'propagate': True
+        }
+    }
+}

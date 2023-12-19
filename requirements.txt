@@ -10,3 +10,4 @@ celery
 gunicorn
 django-celery-beat
 redis
+django-rest-knox
