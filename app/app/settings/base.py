@@ -152,7 +152,6 @@ AUTH_USER_MODEL = 'core.User'
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
@@ -183,6 +182,13 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = bool(int(env('EMAIL_USE_TLS', True)))
 EMAIL_USE_SSL = bool(int(env('EMAIL_USE_SSL', False)))
 EMAIL_FROM_NAME = env("EMAIL_FROM_NAME")
+
+ACTIVATION_LINK_EXPIRE=env('ACTIVATION_LINK_EXPIRE', 24)
+OTP_EXPIRE=env('OTP_EXPIRE', 5)
+
+# FRONTEND CONFIGS
+FRONTEND_URL = env('FRONTEND_URL', 'http://localhost:3000')
+FRONTEND_USER_ACTIVATION_PATH = env('FRONTEND_USER_ACTIVATION_PATH', '/auth/activate')
 
 
 LOGGING = {

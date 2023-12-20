@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin
 )
+from django.utils.http import urlsafe_base64_encode
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password, check_password
@@ -75,6 +76,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+    
+    @property
+    def activation_path(self):
+        ''' Return the path of the activation link built with user information '''
+        infos = f'{self.pk}-{self.first_name}-{self.last_name}-{self.email}-{self.password}'
+        return f'{self.id}__{urlsafe_base64_encode(infos.encode())}'
 
     # Reset password otp handlers
     def get_reset_otp(self, size=6, expire=5):

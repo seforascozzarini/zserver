@@ -1,0 +1,24 @@
+<!-- templates/welcome_email.html -->
+{% extends 'emails/base.html' %}
+
+{% block content %}
+
+    <p>Ciao {{user.first_name}} {{user.last_name}},</p>
+    <p>grazie per esserti iscritto a Zampo! Per completare la registrazione conferma la tua email cliccando sotto</p>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td align="center">
+            <table cellpadding="0" cellspacing="0" style="margin-top: 20px;">
+              <tr>
+                <td bgcolor="#408784" style="border-radius: 5px;">
+                  <a href="{{activation_link}}" target="_blank" style="color: #ffffff; display: inline-block; font-size: 16px; font-weight: bold; text-align: center; text-decoration: none; padding: 12px 20px; width: auto;">
+                    Conferma la tua email!
+                </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    <p>Se non sei stato tu a effettuare la registrazione, ignora questa email</p>
+{% endblock %}

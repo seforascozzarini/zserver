@@ -10,5 +10,6 @@ app_name = 'users'
 
 urlpatterns = [
     path('create/', views.CreateUserView.as_view(), name='create'),
+    path('activate/', views.ActivateUserView.as_view(), name='activate'),
     path('me/', views.ProfileView.as_view(), name='me'),
 ]
