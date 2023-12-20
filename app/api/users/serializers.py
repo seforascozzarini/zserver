@@ -32,24 +32,30 @@ class UserCreateSerializer(gis_serializers.GeoModelSerializer):
 
 class UserManageSerializer(gis_serializers.GeoModelSerializer):
     """Serializer for the user object view/modification."""
+    old_password = serializers.CharField(required=False, write_only=True)
 
     class Meta:
         model = get_user_model()
         fields = ['id', 'email', 'last_name', 'first_name',
-                  'location', 'address', 'radius']
+                  'location', 'address', 'radius', 'old_password', 'password']
         geo_field = ['location']
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
-        read_only_fields = ['email']
+        read_only_fields = ['email', 'id']
 
     def update(self, instance, validated_data):
         """Update and return user."""
         password = validated_data.pop('password', None)
+        old_password = validated_data.pop('old_password', None)
+        print(password)
+        if password is not None:
+            if old_password is None:
+                raise ValidationError({'old_password': 'required'})
+            if not instance.check_password(old_password):
+                raise ValidationError({'old_password': 'invalid'})
+            instance.set_password(password)
+            instance.save()
+
         user = super().update(instance, validated_data)
-
-        if password:
-            user.set_password(password)
-            user.save()
-
         return user
     
 class ActivateUserSerializer(serializers.Serializer):
