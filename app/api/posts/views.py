@@ -38,8 +38,6 @@ class CreatePostView(generics.CreateAPIView):
     serializer_class = PostCreateSerializer
 
 
-
-
 class GetPostListView(generics.GenericAPIView):
     """
     Get a post list in the system.
