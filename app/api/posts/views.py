@@ -2,6 +2,7 @@
 Views for the post API.
 """
 from rest_framework import (
+    views, mixins,
     generics,
     authentication,
     permissions, status,
@@ -12,6 +13,7 @@ from rest_framework.settings import api_settings
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
 
 from api.posts.serializers import (
     PostCreateSerializer,
@@ -20,9 +22,15 @@ from api.posts.serializers import (
     PostImageCreateSerializer
 )
 
-from core.models import Post, PostImage
 
+from rest_framework.pagination import PageNumberPagination
+
+
+from core.models import Post, PostImage
 from core.models.post import PostStatus
+
+from ..utils.query_filters import filterby_boolean_param, filterby_or_list_param
+from ..utils.exceptions import HTTPException
 
 
 class CreatePostView(generics.CreateAPIView):
@@ -30,84 +38,105 @@ class CreatePostView(generics.CreateAPIView):
     serializer_class = PostCreateSerializer
 
 
-class GetPostListView(generics.ListAPIView):
-    """"Get a post list in the system."""
+
+
+class GetPostListView(generics.GenericAPIView):
+    """
+    Get a post list in the system.
+        
+        The following query parameters can be used to filter the list:
+            - search[:str]: search for a post against the following fields: pet_name, text, contacts and specific marks
+            - type[:str]: filter by type
+            - pet_type[:list<int>] filter by pet type
+            - microchiped[:list<int>]: filter by microchiped
+            - sterilized[:list<int>]: filter by sterilized
+            - gender[:list<int>]: filter by gender
+            - pet_type[:list<int>]: filter by pet_type
+            - status[:list<int>]: filter by status NOTE: draft posts are only visible to the user that created them
+            - related_to[:int]: filter by related post (possible matches)
+            
+        - Position and distance:
+            - latitude[:float]: latitude of the position
+            - longitude[:float]: longitude of the position
+            - distance__gte[:int]: minimum distance from the position
+            - distance__lte[:int]: maximum distance from the position
+            NOTE: latitude, longitude and distance (lte or gte) are required together unless the user is authenticated
+                and the location considered is the user location and the radius is the user radius (unless distance is specified)
+    """
 
     serializer_class = PostListSerializer
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+        except HTTPException as e:
+            return e.get_response()
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        self.pagination_class.page_size_query_param = 'page_size'
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
-        id = self.request.query_params.get('id')
-        type = self.request.query_params.get('type')
-        status = self.request.query_params.get('status')
-        user = self.request.query_params.get('user')
-        code = self.request.query_params.get('code')
-        pet_type = self.request.query_params.get('pet_type')
-        gender = self.request.query_params.get('gender')
-        microchip = self.request.query_params.get('microchip')
-        sterilised = self.request.query_params.get('sterilised')
-        location = self.request.query_params.get('location')
-        address = self.request.query_params.get('address')
-        age = self.request.query_params.get('age')
-        specific_marks = self.request.query_params.get('specific_marks')
-        pet_name = self.request.query_params.get('pet_name')
-        text = self.request.query_params.get('text')
-        contacts = self.request.query_params.get('contacts')
-        event_date = self.request.query_params.get('event_date')
-
-        post_list = Post.objects.all()
-        post_list = post_list.filter(status=status) if status else Post.objects.all()
-
-        if id:
-            post_list = post_list.filter(id=id)
-        if type:
-            post_list = post_list.filter(type=type)
-        if user:
-            post_list = post_list.filter(user=user)
-        if code:
-            post_list = post_list.filter(code=code)
-        if pet_type:
-            post_list = post_list.filter(pet_type=pet_type)
-        if gender:
-            post_list = post_list.filter(gender=gender)
-        if microchip:
-            post_list = post_list.filter(microchip=microchip)
-        if sterilised:
-            post_list = post_list.filter(sterilised=sterilised)
-        if location:
-            post_list = post_list.filter(location=location)
-            # post_list = GeometryFilter(name='location', lookup_expr='location')
-
-            # radius = 2000
-            # location = Point(location.coordinates[0], location.coordinates[1], srid=4326)
-            # post_list = Post.objects.filter(
-            #     location__distance_lte=(
-            #         location,
-            #         D(m=radius)
-            #     )
-            # ).distance(
-            #     location
-            # ).order_by(
-            #     'distance'
-            # )
-        if address:
-            post_list = post_list.filter(address=address)
-        if age:
-            post_list = post_list.filter(age=age)
-        if specific_marks:
-            post_list = post_list.filter(specific_marks=specific_marks)
-        if pet_name:
-            post_list = post_list.filter(pet_name=pet_name)
-        if text:
-            post_list = post_list.filter(text=text)
-        if contacts:
-            post_list = post_list.filter(contacts=contacts)
-        if event_date:
-            post_list = post_list.filter(event_date=event_date)
-
-        if pet_type and type:
-            post_list = post_list.filter(pet_type=pet_type).filter(type=type)
-
-        return post_list
+        related_id = self.request.query_params.get('related_to')
+        if related_id is not None:
+            related = Post.objects.get(related_id)
+            if related.status == PostStatus.DRAFT:
+                return Post.objects.none()
+            qs = Post.objects.get_related(related)
+        else:
+            status = self.request.query_params.get('status', 1)
+            if status == 0:
+                if self.request.user.is_authenticated:
+                    qs = Post.objects.filter(user=self.request.user)
+                else: 
+                    return Post.objects.none()
+            qs = Post.objects.all().filter(status)
+        
+        search = self.request.query_params.get('search')
+        if search is not None:
+            qs = qs.search(search)
+        
+                    
+        qs = filterby_or_list_param(qs, self.request, 'type')
+        qs = filterby_or_list_param(qs, self.request, 'pet_type')
+        qs = filterby_or_list_param(qs, self.request, 'gender')
+        qs = filterby_or_list_param(qs, self.request, 'sterilized')
+        qs = filterby_or_list_param(qs, self.request, 'microchiped')
+        
+        latitude = self.request.query_params.get('latitude', None)
+        longitude = self.request.query_params.get('longitude', None)
+        distance__gte = self.request.query_params.get('distance__gte', None)
+        distance__lte = self.request.query_params.get('distance__lte', None)
+        
+        if latitude is not None and longitude is not None:
+            if (distance__gte is not None or distance__lte is not None):
+                try:
+                    location = Point(float(longitude), float(latitude))
+                except Exception:
+                    raise HTTPException(400, {'latitude': 'invalid', 'longitude': 'invalid'})
+                qs = qs.annotate_distance(location)
+                if distance__gte is not None:
+                    qs = qs.filter(distance__gte=distance__gte)
+                if distance__lte is not None: 
+                    qs = qs.filter(distance__lte=distance__lte)
+            else:
+                raise HTTPException(400, {'distance': 'required'})
+        elif self.user.is_authenticated:
+            if (distance__gte is not None or distance__lte is not None):
+                qs = qs.annotate_distance(self.user.location)
+                if distance__gte is not None:
+                    qs = qs.filter(distance__gte=distance__gte)
+                if distance__lte is not None:
+                    qs = qs.filter(distance__lte=distance__lte)
+            else:    
+                qs = qs.filterby_user_location(self.user)
 
 
 class CreatePostImageView(generics.CreateAPIView):

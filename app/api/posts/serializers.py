@@ -13,7 +13,7 @@ class PostCreateSerializer(gis_serializers.GeoModelSerializer):
     class Meta:
         model = Post
         fields = ['user', 'type', 'location', 'address', 'pet_type',
-                  'gender', 'age', 'microchip', 'sterilised',
+                  'gender', 'age_min', 'age_max', 'microchip', 'sterilised',
                   'specific_marks', 'pet_name', 'text', 'contacts', 'status',
                   'default_image', 'event_date']
         geo_field = ['location']
@@ -29,7 +29,7 @@ class PostListSerializer(gis_serializers.GeoModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'user', 'code', 'type', 'location', 'address', 'pet_type',
-                  'gender', 'age', 'microchip', 'sterilised',
+                  'gender', 'age_min', 'age_max', 'microchip', 'sterilised',
                   'specific_marks', 'pet_name', 'text', 'contacts', 'status',
                   'is_flagged', 'default_image', 'event_date']
         geo_field = ['location']
